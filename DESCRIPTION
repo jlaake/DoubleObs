@@ -1,10 +1,10 @@
 Package: DoubleObs
 Type: Package
 Title: Analysis of double-observer survey data
-Version: 0.1.4
+Version: 0.2.1
 Author: Jeff Laake
 Maintainer: Jeff Laake <jefflaake@gmail.com>
-Description: Conducts simulation and data analysis for double observer data with a sample of marked animals.
+Description: Conducts simulation and data analysis for double observer data with a sample of marked animals. Provides examples of hybrid double observer analysis, standard double observer analysis and sightability analysis with simulated data.
 License: GPL
 Depends: R (>= 3.5.0)
 Imports: RMark
