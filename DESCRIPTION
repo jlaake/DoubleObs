@@ -1,7 +1,7 @@
 Package: DoubleObs
 Type: Package
 Title: Analysis of double-observer survey data
-Version: 0.1.3
+Version: 0.1.4
 Author: Jeff Laake
 Maintainer: Jeff Laake <jefflaake@gmail.com>
 Description: Conducts simulation and data analysis for double observer data with a sample of marked animals.

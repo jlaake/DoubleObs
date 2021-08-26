@@ -5,13 +5,14 @@
 #'
 #'
 #' @usage
-#' Nhat_group_marklist(marklist,data)
-#' Nhat_marklist(marklist,data)
+#' Nhat_group_marklist(marklist,data,marked_known=TRUE)
+#' Nhat_marklist(marklist,data,marked_known=TRUE)
 #' mod_avgN(marklist,Nmatrix,Ngrp=TRUE,data)
 #'
 #' @aliases Nhat_group_marklist Nhat_marklist mod_avgN
 #' @param marklist list of fitted mark models
 #' @param data dataframe containing data used to fit model or subset of that data
+#' @param marked_known if FALSE includes marked groups into estimation,  otherwise adds number in marked groups to abundance
 #' @param Ngrp if TRUE, model average is for group abundance
 #' @param Nmatrix matrix of estimates in order of model.table (return value from Nhat_group_marklist and Mhat_marklist)
 #'
@@ -19,7 +20,7 @@
 #' @author Jeff Laake
 #' @export Nhat_marklist Nhat_group_marklist mod_avgN
 #'
-Nhat_marklist=function(marklist,data)
+Nhat_marklist=function(marklist,data,marked_known=TRUE)
 {
   if(any(sapply(marklist[1:(length(marklist)-1)],function(x) ncol(x$data$group.covariates)!=1))) stop("\nOnly works with one group variable named 'type'\n")
   if(any(sapply(marklist[1:(length(marklist)-1)],function(x) is.null(x$data$data$type)))) stop("\n group variable named 'type' not found in models\n")
@@ -32,6 +33,11 @@ Nhat_marklist=function(marklist,data)
   }
   if(any(!c("marked","unmarked")%in%levels(data$type)) | length(levels(data$type))!=2 )
     stop("\ntype variable must have only 2 levels marked and unmarked")
+  if(!marked_known)
+  {
+    data=data[!(data$type=="marked"&substr(data$ch,2,3)=="00"),]
+    data$type="unmarked"
+  }
   known=sum(data$count[data$type=="marked"])
   if(class(marklist)!="marklist") stop("\nmarklist must contain a list of mark models and model.table as created by mark.wrapper\n")
   Nmatrix=matrix(NA,nrow=nrow(marklist$model.table),ncol=4)
@@ -84,7 +90,7 @@ Nhat_marklist=function(marklist,data)
   return(Nmatrix)
 }
 
-Nhat_group_marklist=function(marklist,data)
+Nhat_group_marklist=function(marklist,data,marked_known=TRUE)
 {
   if(any(sapply(marklist[1:(length(marklist)-1)],function(x) ncol(x$data$group.covariates)!=1))) stop("\nOnly works with one group variable named 'type'\n")
   if(any(sapply(marklist[1:(length(marklist)-1)],function(x) is.null(x$data$data$type)))) stop("\n group variable named 'type' not found in models\n")
@@ -97,6 +103,11 @@ Nhat_group_marklist=function(marklist,data)
   }
   if(any(!c("marked","unmarked")%in%levels(data$type)) | length(levels(data$type))!=2 )
     stop("\ntype variable must have only 2 levels marked and unmarked")
+  if(!marked_known)
+  {
+    data=data[!(data$type=="marked"&substr(data$ch,2,3)=="00"),]
+    data$type="unmarked"
+  }
   if(class(marklist)!="marklist") stop("\nmarklist must contain a list of mark models and model.table as created by mark.wrapper\n")
   known=nrow(data[data$type=="marked",])
   Nmatrix=matrix(NA,nrow=nrow(marklist$model.table),ncol=4)

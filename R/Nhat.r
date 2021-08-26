@@ -38,7 +38,7 @@ Nhat_grp=function(mod,indices,data,known)
   Ngrp=sum(1/pdot)
 
   # the variance code uses the chain-rule by first computing the var-cov matrix of the pdot estimates (vc_pdot) and then from it computing the
-  # the variance of sum(1/pdot) for the n values (70 in this case)
+  # the variance of sum(1/pdot) for the n values
   nr=nrow(xx$vcv)
   # first step
   deriv=sapply(split(xx$estimates$estimate,factor(rep(1:nrow(data[data$type=="unmarked",]),each=2))),function(x) return(c(1-x[2],1-x[1],rep(0,nr))))
@@ -120,7 +120,7 @@ Nhat_grp0=function(mod,indices,data,known)
   Ngrp=sum(1/pdot)
 
   # the variance code uses the chain-rule by first computing the var-cov matrix of the pdot estimates (vc_pdot) and then from it computing the
-  # the variance of sum(1/pdot) for the n values (70 in this case)
+  # the variance of sum(1/pdot) for the n values
   nr=nrow(xx$vcv)-1
   # first step
   deriv=sapply(split(xx$estimates$estimate[-1],factor(rep(1:nrow(data[data$type=="unmarked",]),each=2))),function(x) return(c(1-x[2],1-x[1],rep(0,nr))))

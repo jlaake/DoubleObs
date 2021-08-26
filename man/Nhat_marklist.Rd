@@ -6,14 +6,16 @@
 \alias{mod_avgN}
 \title{Abundance estimation for Huggins or HugFullHet models from marklist of fitted models}
 \usage{
-Nhat_group_marklist(marklist,data)
-Nhat_marklist(marklist,data)
+Nhat_group_marklist(marklist,data,marked_known=TRUE)
+Nhat_marklist(marklist,data,marked_known=TRUE)
 mod_avgN(marklist,Nmatrix,Ngrp=TRUE,data)
 }
 \arguments{
 \item{marklist}{list of fitted mark models}
 
 \item{data}{dataframe containing data used to fit model or subset of that data}
+
+\item{marked_known}{if FALSE includes marked groups into estimation,  otherwise adds number in marked groups to abundance}
 
 \item{Ngrp}{if TRUE, model average is for group abundance}
 

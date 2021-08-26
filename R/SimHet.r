@@ -106,10 +106,10 @@ simhet=function(reps,n,nradios,beta,gen_formula="~-1+loc+cov",p0=0,data=NULL,fit
                   stringsAsFactors = FALSE)
     else
     {
-      df=data.frame(ch=c(ch_uncond,ch_cond), counts=c(counts_uncond,counts_cond[seen]),
+      df=data.frame(ch=c(ch_uncond,ch_cond), count=c(counts_uncond,counts_cond[seen]),
                     het=sapply(strsplit(c(ch_uncond,ch_cond),""),function(x) as.numeric(x[2]=="1")),
                     stringsAsFactors = FALSE)
-      df$lngs=log(df$counts)
+      df$lngs=log(df$count)
     }
     df$type=factor(c(rep("marked",length(ch_uncond)),rep("unmarked",length(ch_cond))))
     df=cbind(df,rbind(savedata[1:nradios,,drop=FALSE],savedata[(nradios+1):totaln,,drop=FALSE][seen,,drop=FALSE]))
