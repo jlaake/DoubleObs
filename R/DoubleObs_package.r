@@ -31,7 +31,7 @@
 #'
 #' Simulation:
 #' The function simhet provides a simulation capability to generate hybrid double observer survey data with residual
-#' heterogeneity. The function senerates simulation replicates of  double observer survey data with a known (marked) and unmarked portion of the population with
+#' heterogeneity. The function senerates simulation replicates of double observer survey data with a known (marked) and unmarked portion of the population with
 #' or without group sizes. Fits a sequence of models, and reports average abundance, average std error, confidence interval
 #' coverage for each model and model average estimate.
 #'
@@ -70,19 +70,39 @@ NULL
 #' data(example_data)
 #' # example using fit_models
 #' fit_models(data=example_data,formula=c("veg+lngs","lngs","veg",""))
-#' #example using RMark directly
+#' #example using RMark directly but uses prep_data and prep_ddl
+#' # prep_data makes sure some aspects are properly setup in data like a 3 character ch field,
+#' # field called type with values marked and unmarked is a factor variable, and it creates a
+#' # field called het which is 1 if character position 2 in ch is 1 (ie front observer saw it),
+#' # and 0 otherwise
 #' dp=prep_data(example_data,model="Huggins")
-#' # variables het, rear and loc are created in prep_ddl which call make.design.data in RMark
-#' # and then creates other variables used to fit the models
+#' # prep_ddl calls make.design.data from RMark and then creates the factor variable with 3 values
+#' # "Radio","Front" and "Rear" corresponding to occasions 1 to 3. It also creates a numeric variable
+#' # rear which is 1 for occasion 3 and 0 otherwise. In addition, for occasion 1, p is fixed to 1 for
+#' # occasion 1 for marked(radio) groups because they are known and the first character is always
+#' # 1 for them and fixed to p=0 for unmarked groups because the first character is always 0.
 #' ddl=prep_ddl(dp)
+#' # create a function to fit a set of models
 #' fit_do=function()
 #' {
 #'    # tag loss approach
+#'    # It is not a staightforward Huggins in which c is different than p. For 3 occasions there
+#'    # is a p1,p2,p3, and c2 and c3. p1is fixed to 1 or 0 as described above. p2 and p3 are
+#'    # estimated for the front and rear observers, c2=p2 because occasion 1 isn't really a
+#'    # capture occasion. So the only recapture occasion is for the rear observer and c differs
+#'    # with the term c:het:rear which restricts it to be for occasion 3 (rear) and for a
+#'    # recapture (het=1 means observer 1 saw it) and only for c (c=1).
+#'    # veg is a fictional vegetation field, lngs is natural log of group size, loc is location and
+#'    # allows p2 (front) and p3 (rear) initial capture probabilities to differ. The recapture
+#'    # probability (c) for rear observer would include beta for p3 and the beta for c:het:rear.
 #'    p.1=list(formula=~veg+lngs+loc+c:het:rear,share=TRUE)
 #'    p.2=list(formula=~lngs+loc+c:het:rear,share=TRUE)
 #'    p.3=list(formula=~veg+loc+c:het:rear,share=TRUE)
 #'    p.4=list(formula=~loc+c:het:rear,share=TRUE)
-#'    # hybrid approach
+#'    # hybrid approach - the hybrid approach simply assumes an additive difference between
+#'    # marked and unmarked groups which is the type variable. In predicting abundance of
+#'    # unmarked groups,the beta for marked is used. For each type of model, the abundance of
+#'    # marked groups is always the number in the data because p=1 for the first occasion.
 #'    p.5=list(formula=~veg+lngs+loc+type,share=TRUE)
 #'    p.6=list(formula=~lngs+loc+type,share=TRUE)
 #'    p.7=list(formula=~veg+loc+type,share=TRUE)
@@ -97,10 +117,16 @@ NULL
 #' Nhat_group_marklist(results,example_data)
 #' # Group abundance estimate from MARK for best model
 #' colSums(results[[1]]$results$derived[[1]])
+#' # Notice that the abundance results from MARK do not match what Nhat_group_marklist
+#' # produces for model 5 - 158.7365 because the original Griffin et al
+#' # hybrid model (those with type in formula) uses the parameters for the marked group to
+#' # predict p for the unmarked group whereas MARK doesn't
+#' colSums(results[[5]]$results$derived[[1]])
 #' # Group abundance not using 100 set (marked groups missed)
-#' # This can be useful if not all marked missed groups can be found after survey
+#' # This can be useful if not all marked missed groups can be found after survey so the
+#' # group size would be unknown
 #' Nhat_group_marklist(results,example_data,marked_known=FALSE)
-#' # MARK doesn't consider group size so their is no equivalent for total abundance
+#' # MARK doesn't consider group size so their is no equivalent for total abundance from MARK
 #' Nhat_marklist(results,example_data)
 #' # Animal abundance not using 100 set (marked groups missed)
 #' # This can be useful if not all marked missed groups can be found after survey
